@@ -1,0 +1,82 @@
+[
+    {
+        "Name": "structured_query_decomposition",
+        "Title": "Stepwise Query Decomposition for Complex SQL Generation",
+        "Experiment": "Modify predict_sql to first generate a JSON-structured decomposition plan using a new planning prompt that extracts: target_columns, source_tables, join_conditions, filter_conditions, aggregation_needs, and ordering. Add parse_plan method that validates the JSON structure. Add plan_to_sql method that converts the validated plan to SQL. If planning fails or produces invalid JSON, fall back to original generation. Compare accuracy and execution success rates on complex queries (multiple joins/aggregations) versus simple queries in the benchmark.",
+        "Interestingness": 9,
+        "Feasibility": 7,
+        "Novelty": 8
+    },
+    {
+        "Name": "join_order_optimization_through_targeted_sampling",
+        "Title": "Join Order Optimization through Targeted Data Sampling for Efficient Text-to-SQL",
+        "Experiment": "Modify predict_sql to add focused join order optimization through minimal data sampling. Add method detect_multi_join_scenario that identifies when the question likely requires joining 3+ tables. When detected, add method sample_join_cardinality that executes a single efficient query to estimate join selectivity between the most promising table pairs (e.g., SELECT COUNT(*) FROM table1 JOIN table2 ON key LIMIT 1). Add method generate_join_guidance that creates concise optimization hints (e.g., 'Join A-B first: high selectivity, Join B-C: low selectivity'). Enhance system_prompt with join order guidance templates. Implement strict limit: one sampling query maximum, only triggered for clear multi-join scenarios. Compare performance on multi-table join queries against baseline, measuring execution success, query efficiency, and reduction in timeout failures while monitoring sampling overhead.",
+        "Interestingness": 9,
+        "Feasibility": 9,
+        "Novelty": 9
+    },
+    {
+        "Name": "selective_join_optimization",
+        "Title": "Selective Join Optimization through Minimal Cardinality Estimation for Efficient Text-to-SQL",
+        "Experiment": "Modify predict_sql to add targeted join optimization when multi-table queries are detected. Add method detect_join_scenarios that analyzes the question and schema for likely join requirements. When joins are detected, add method estimate_join_cardinality that executes minimal COUNT queries (e.g., SELECT COUNT(*) FROM table1 JOIN table2 ON key LIMIT 1) to estimate join selectivity between candidate table pairs. Add method generate_join_guidance that creates specific optimization hints (e.g., 'Start with join between A-B: high selectivity'). Enhance system_prompt with join optimization templates. Implement strict limits: maximum 2-3 cardinality queries per question, only triggered for clear multi-join scenarios. Compare performance on join-heavy queries against baseline, measuring execution success, query efficiency, and reduction in timeout failures.",
+        "Interestingness": 9,
+        "Feasibility": 9,
+        "Novelty": 8
+    },
+    {
+        "Name": "foreign_key_guided_joins",
+        "Title": "Foreign Key-Guided JOIN Construction for Robust Text-to-SQL Generation",
+        "Experiment": "Modify predict_sql to add focused foreign key analysis. Add method extract_foreign_keys that uses DbConnection to identify all foreign key relationships in the schema. Add method build_join_graph that creates a lightweight representation of table connectivity. Add method recommend_join_paths that suggests optimal join sequences based on the detected foreign key relationships. Enhance system_prompt with specific join guidance: 'Foreign key analysis suggests: join table A to B on A.id = B.a_id, then join to C on B.id = C.b_id'. Add validation during regeneration that specifically checks join conditions against the foreign key relationships. Compare performance on multi-table JOIN queries against baseline, measuring execution success, join condition accuracy, and reduction in join-related regeneration attempts.",
+        "Interestingness": 9,
+        "Feasibility": 9,
+        "Novelty": 8
+    },
+    {
+        "Name": "temporal_constraint_resolution",
+        "Title": "Temporal Constraint Resolution for Ambiguous Time References in SQL Generation",
+        "Experiment": "Add method `_resolve_temporal_constraints(question: str, db: DbConnection) -> dict` that: 1) Uses predefined regex patterns to detect common temporal phrases ('last month', 'recent', 'past year', etc.) 2) Queries database metadata to identify date/datetime columns 3) Returns resolved constraints (e.g., {'timeframe': 'last_month', 'date_column': 'created_at'}). Modify `_build_user_prompt` to append temporal guidance when constraints are detected. Enhance retry_func to validate temporal logic by checking if date constraints produce expected result ranges. Measure impact on temporally ambiguous queries using targeted test cases.",
+        "Interestingness": 9,
+        "Feasibility": 8,
+        "Novelty": 9
+    },
+    {
+        "Name": "enhanced_semantic_reflection",
+        "Title": "Enhanced Semantic Reflection for Iterative SQL Generation",
+        "Experiment": "Modify the reflection_llm_chain prompt to provide structured, actionable feedback. Update the prompt to request: 1) Identification of specific unmet question requirements, 2) Concrete SQL modification suggestions. Enhance the Reflection dataclass to include fields like 'missing_conditions' and 'suggested_fixes'. In retry_func, directly incorporate these suggestions into the regeneration prompt (e.g., 'The previous SQL missed [missing_conditions]. Please generate SQL that addresses this by [suggested_fixes]'). This creates a closed-loop correction system where feedback directly informs the next generation attempt.",
+        "Interestingness": 8,
+        "Feasibility": 8,
+        "Novelty": 8
+    },
+    {
+        "Name": "dynamic_synonym_mapping",
+        "Title": "Dynamic Synonym Mapping for Natural Language to Schema Alignment",
+        "Experiment": "Modify DeepseekAIScientist to include a lightweight synonym discovery mechanism. Implementation: 1) Add method `_extract_query_terms` that identifies key nouns and phrases from the question. 2) Add method `_find_schema_synonyms` that uses the model's embedding space to compute semantic similarity between query terms and column/table names. 3) Update `_build_system_prompt` to include a 'Term Mapping' section showing discovered synonyms (e.g., 'customers \u2192 clients', 'purchases \u2192 orders'). 4) The mapping would be computed on-the-fly for each query using the existing model's capabilities without external resources. This focuses specifically on the most common semantic mismatch issue while remaining computationally feasible.",
+        "Interestingness": 8,
+        "Feasibility": 8,
+        "Novelty": 8
+    },
+    {
+        "Name": "execution_sample_guided_refinement",
+        "Title": "Execution Sample Guided Refinement for Concrete SQL Correction",
+        "Experiment": "Modify DeepseekAIScientist by adding method `_extract_result_samples(result: str, max_samples: int = 3) -> str` that simply extracts the first few rows from execution results for display purposes. Update the reflection_llm_chain prompt to include these concrete data samples with the instruction: 'Here are actual results from the failed query: {samples}. Use these to understand what data is available and what might be missing or incorrect.' Enhance the Reflection dataclass to include a 'sample_based_insights' field. Modify retry_func to pass the extracted samples to the regeneration prompt, providing concrete examples of what the current query returns. This creates a more tangible feedback loop using actual data without complex pattern analysis.",
+        "Interestingness": 8,
+        "Feasibility": 9,
+        "Novelty": 8
+    },
+    {
+        "Name": "successful_join_pattern_memory",
+        "Title": "Successful Join Pattern Memory for Efficient SQL Generation",
+        "Experiment": "Modify DeepseekAIScientist by adding a lightweight dictionary `_successful_joins` that maps question contexts to successful join patterns. Add method `_extract_join_pattern(sql: str) -> str` that identifies the core join structure (table pairs and join conditions) using simple parsing. Add method `_find_relevant_joins(question: str, context: ContextData) -> list` that matches current question context against stored patterns. Update `_build_system_prompt` to include relevant join guidance when matches are found (e.g., 'Previous successful queries for similar questions used JOIN between X and Y on condition Z'). Implement basic frequency-based pattern prioritization. Measure improvement on join-heavy queries and reduction in join-related errors.",
+        "Interestingness": 9,
+        "Feasibility": 9,
+        "Novelty": 8
+    },
+    {
+        "Name": "column_cooccurrence_patterns",
+        "Title": "Column Co-occurrence Pattern Learning for Targeted SQL Generation",
+        "Experiment": "Modify DeepseekAIScientist by adding a lightweight cache `_column_patterns` (max 25 entries) that stores sets of columns typically accessed together in successful queries. Add method `_extract_column_pattern(sql: str) -> set` that identifies all columns referenced in SELECT and WHERE clauses using simple parsing. Add method `_find_relevant_patterns(question: str, context: ContextData) -> list` that returns patterns with significant column overlap with current question terms. Update `_build_system_prompt` to include pattern guidance: 'For similar queries, these columns are typically accessed together: {pattern_columns}'. Modify predict_sql to store new patterns after successful execution and use relevant patterns to guide column selection and filtering logic. Measure improvement on queries requiring complex column combinations and reduction in missing column errors.",
+        "Interestingness": 9,
+        "Feasibility": 9,
+        "Novelty": 8
+    }
+]

@@ -1,0 +1,32 @@
+{
+  "wrapper_config": {
+    "name": "GigaChatRun4Success49MCTS",
+    "params": {
+      "model": "GigaChat-2-Max",
+      "base_url": "https://gigachat-ift.sberdevices.delta.sbrf.ru/v1/",
+      "cert_file": "/work/data/dsafronov/text2sql_bench/certs/published_pem.txt",
+      "key_file": "/work/data/dsafronov/text2sql_bench/certs/CI05477006-DEV-LiveQuery-dev-client.key",
+      "verify_ssl_certs": false,
+      "temperature": 0,
+      "timeout": 60000,
+      "model_name": "GigaChat-2-Max",
+      "retries_num": 3,
+        "use_pregen": true
+    }
+  },
+  "prompt": "deepseek_baikal_mcts",
+  "runs": [
+    {
+      "dataset": "minibird_sqlite",
+      "questions_file": "datasets/datasets/minibird_sqlite/minibird_sqlite_questions.json",
+      "use_ddl": true,
+      "use_stat": true,
+      "only_relevant_tables": false,
+        "use_gold": false,
+      "use_hints": false,
+      "save_report": false,
+      "top_g": 15,
+        "top_t": 5,
+      "top_c": 15
+    } ]
+}
