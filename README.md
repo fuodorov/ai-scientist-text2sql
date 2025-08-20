@@ -2,7 +2,7 @@
 This repository contains complete result bundles for three successful ideas that improved a Text-to-SQL benchmark using the AI-Scientist(Sakana-AI) workflow using GigaChat-Max.
 The experiments test different optimization strategies, including Monte Carlo Tree Search (MCTS) and alternative approaches.
 
-Repository Structure
+# Repository Structure
 Root Directory
 join_order_optimization_through_targeted_sampling_run_4_mcts/ Experiment run #4 for join order optimization with MCTS.
 
@@ -43,5 +43,5 @@ Structured Query Decomposition: Breaking complex queries into simpler subproblem
 
 MCTS Impact: How Monte Carlo Tree Search influences SQL generation accuracy/efficiency.
 
-How to Use
+# How to Use
 Please contact me or any of the article's authors—we can provide the code and explain how to properly run the benchmark, prepare data from mini Bird, and reproduce the results.
