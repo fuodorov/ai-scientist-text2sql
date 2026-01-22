@@ -45,3 +45,16 @@ MCTS Impact: How Monte Carlo Tree Search influences SQL generation accuracy/effi
 
 # How to Use
 Please contact me or any of the article's authors—we can provide the code and explain how to properly run the benchmark, prepare data from mini Bird, and reproduce the results.
+
+# Citation
+```
+\Bibitem{FedLavIbr25}
+\by V.~Fedorov, D.~Lavitskaya, D.~M.~Ibragimov, D.~A.~Safronov, A.~Balles, A.~Yu.~Gribanova, M.~S.~Radionov
+\paper Adapting the AI scientist for enterprise: solving real business problems with autonomous TEXT-to-SQL research
+\jour Dokl. RAN. Math. Inf. Proc. Upr.
+\yr 2025
+\vol 527
+\pages 471--484
+\mathnet{http://mi.mathnet.ru/danma702}
+\elib{https://elibrary.ru/item.asp?id=83189227}
+```
